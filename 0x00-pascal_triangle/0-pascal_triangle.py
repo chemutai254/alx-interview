@@ -20,4 +20,4 @@ def pascal_triangle(n):
             addRes = row_above[nums] + row_above[nums + 1]
             row.append(addRes)
         res.append(row)
-    return res 
+    return res
