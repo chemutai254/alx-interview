@@ -15,24 +15,51 @@ def validUTF8(data):
     therefore you only need to handle the 8 least
     significant bits of each integer
     """
-    counter = 0
-    a = 1 << 7
-    b = 1 << 6
+    no_of_bits_per_block = 8
+    max_no_of_ones = 4
 
-    for i in data:
-        byte_data = 1 << 7
-        if counter == 0:
-            while byte_data & i:
-                counter += 1
-                byte_data = byte_data >> 1
-                if counter == 0:
-                    continue
-            if counter == 1 or counter > 4:
+    index = 0
+    while index < len(data):
+        number = data[index] & (2 ** 7)
+        number >>= (no_of_bits_per_block - 1)
+        if number == 0:  # single byte char
+            index += 1
+            continue
+
+            # validate multi-byte char
+            number_of_ones = 0
+            while True:  # get the number of significant ones
+                number = data[index] & (2 ** (7 - number_of_ones))
+                number >>= (no_of_bits_per_block - number_of_ones - 1)
+                if number == 1:
+                    number_of_ones += 1
+                else:
+                    break
+
+                if number_of_ones > max_no_of_ones:
+                    return False  # too much ones per char sequence
+
+            if number_of_ones == 1:
+                return False  # there has to be at least 2 ones
+
+            index += 1  # move on to check the next byte in a multi-byte
+            # char sequence
+
+            # check for out of bounds and exit early
+            if index >= len(data) or index >= (index + number_of_ones - 1):
                 return False
-            else:
-                if not((i & a) and (i & b)):
+
+            # every next byte has to start with "10"
+            for i in range(index, index + number_of_ones - 1):
+                number = data[i]
+
+                number >>= (no_of_bits_per_block - 1)
+                if number != 1:
                     return False
-        counter -= 1
-        if counter == 0:
-            return True
-        return False
+                number >>= (no_of_bits_per_block - 1)
+                if number != 0:
+                    return False
+
+                index += 1
+
+        return True
