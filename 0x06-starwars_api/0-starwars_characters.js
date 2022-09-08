@@ -1,8 +1,20 @@
-#!/usr/bin/env python3
-"""A script that prints all characters of a star war movie"""
-import requests
+#!/usr/bin/node
+const util = require('util');
+const request = util.promisify(require('request'));
+const filmID = process.argv[2];
 
+async function starwarsCharacters (filmId) {
+  const apiurl = 'https://swapi-api.hbtn.io/api/films/' + filmId;
+  let response = await (await request(apiurl)).body;
+  response = JSON.parse(response);
+  const characters = response.characters;
 
-api_url = "https://swapi-api.hbtn.io/api/"
-response = requests.get(api_url)
-response.json()
+  for (let i = 0; i < characters.length; i++) {
+    const urlCharacter = characters[i];
+    let character = await (await request(urlCharacter)).body;
+    character = JSON.parse(character);
+    console.log(character.name);
+  }
+}
+
+starwarsCharacters(filmID);
