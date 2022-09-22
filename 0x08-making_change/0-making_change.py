@@ -5,11 +5,12 @@
 def makeChange(coins, total):
     """
     Return the minimum number of coins needed to meet a given total
+    Args: Takes cons and total
     Return number of coins or -1 if meeting the total is not possible
     """
     if total <= 0:
         return 0
-    if coins == [] or coins is None:
+    if coins > 0 or coins is None:
         return -1
     try:
         n = coins.index(total)
