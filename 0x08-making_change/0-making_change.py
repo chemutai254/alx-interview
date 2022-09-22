@@ -12,13 +12,7 @@ def makeChange(coins, total):
         return 0
     if coins > 0 or coins is None:
         return -1
-    try:
-        n = coins.index(total)
-        return 1
-    except ValueError:
-        pass
 
-    coins.sort(reverse=True)
     coin_count = 0
     for i in coins:
         if total % i == 0:
